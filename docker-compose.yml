@@ -1,0 +1,84 @@
+###############################################################################
+#                          Docker-Compose file for openenventory              #
+#  This file includes a webserver, database and databasemanagement adopted    #
+#                        to be used with openenventory			      #
+###############################################################################
+version: "3.5"
+
+#--- This network is created by the nginxproxy ----
+# if you have an nginx-proxy, define external as true to enable access via the proxy ----
+networks:
+  oenetwork:
+   external:
+     name: ${NAME_NETWORK}
+
+
+services:
+# ---- Stuff for Open Enventory -----------------
+# The databases and users are created in conf/mysql_dbases
+# With the latest mariadb, I did not have success
+    mysql:
+      image: mariadb:10.2
+      container_name: ${NAME_MYSQL}
+      working_dir: /application
+      volumes:
+        - /application
+        - ./conf/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+        - ./conf/mysql_dbases:/docker-entrypoint-initdb.d
+      environment:
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWD}
+      # You could let people access to the database from outside, but I do not recommend this
+#      ports:
+#        - 8082:3306
+      restart: unless-stopped
+      networks:
+        - oenetwork
+
+# Websever for openenventory
+    webserver:
+      image: nginx:alpine
+      container_name: ${NAME_WEBSERVER}
+      working_dir: /application
+      volumes:
+          - ./web:/application
+          - ./conf/nginx.conf:/etc/nginx/conf.d/default.conf
+      ports:
+       - ${PORT_OPENENVENTORY}:80
+      restart: unless-stopped
+      environment:
+       - VIRTUAL_HOST=${DOMAIN_OE}.${OWN_HOST_IP}.xip.io,chemie.${OWN_HOST_IP}.xip.io
+       - NETWORK_ACCESS=internal
+      networks:
+        - oenetwork
+
+# The php-container is build specially for openenventory 
+    php-fpm:
+      build: phpdocker/php7
+      container_name: ${NAME_PHP}
+      working_dir: /application
+      volumes:
+        - ./web:/application
+        - ./phpdocker/php7/php-ini-overrides.ini:/usr/local/etc/php/conf.d/99-overrides.ini
+      restart: unless-stopped 
+      networks:
+        - oenetwork
+
+# ---- For MySQL Database -----
+# As phpMyAdmin can also be accessed from localhost directly,
+# It is possible to dump big databases without getting a timeout from the nginx-proxy in your way
+    phpmyadmin:
+      image: phpmyadmin/phpmyadmin:4.8
+      container_name: ${NAME_PHPMYADMIN}
+      volumes:
+       - /sessions
+      ports:
+       - 127.0.0.1:${PORT_PHPMYADMIN}:80
+      restart: unless-stopped 
+      environment:
+       - PMA_HOSTS=${NAME_MYSQL}
+       - VIRTUAL_HOST=${DOMAIN_MYADMIN}.${OWN_HOST_IP}.xip.io
+       - NETWORK_ACCESS=internal
+      depends_on:
+       - mysql
+      networks:
+        - oenetwork

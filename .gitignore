@@ -1,0 +1,4 @@
+web/*
+!web/lib_global_settings.php
+.env
+conf/mysql_dbases/openenventory.sql
