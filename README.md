@@ -32,7 +32,7 @@ You can run openenventory behind a subdomain, even in a local environment withou
 We use xip.io for this purpose which gives us back a DNS record containing our local Server-IP and enables to use subdomains.
 Means: openenventory.192.168.0.1.xip.io resolves to 192.168.0.1
 At your server, the nginxproxy uses the subdomain to forward internally to the openenventory container.
-The subdonmain name for openenevtory can be configured in the .env via DOMAIN_OE
+The subdonmain name for openenevtory can be configured in the .env via DOMAIN_OE - it is compatible with the jwilder/nginx-proxy docker-image.
 
 ## Advanced stuff:
 * You can create the database automatically at the _creation_ of the stack by putting into conf/mysql_dbases/ a corresponding .sql file (see there in the example)
@@ -40,6 +40,7 @@ The subdonmain name for openenevtory can be configured in the .env via DOMAIN_OE
 ## FAQ:
 * Where do if find which port I can reach the webserver/phpMyAdmin?
 	* take a look into your .env file
-
+* Why is the naming of the containers done by hand?
+	* As this stack is not ment to be massively deployed I found it more convenient to name the containers myself. It further helps me to know what to enter manually in the php-configuration files of open enventory. A automatic naming would be useful if the php-configuration files would be automatically changed, but I did not investigate in that.
 
 
