@@ -1,8 +1,8 @@
 # This file creates the databases in the MYSQL-Server for the Gitea server
 
 # create as many databases as you want
-CREATE DATABASE IF NOT EXISTS kvm_chemikalien;
+CREATE DATABASE IF NOT EXISTS YOUR_DATABASE_NAME;
 
 # create an user and grant permissions to it
-CREATE USER 'kvm'@'%' IDENTIFIED BY 'chemicals14*';
-GRANT ALL ON `kvm_chemikalien`.* TO 'kvm'@'%';
+CREATE USER 'YOUR_USERNAME'@'%' IDENTIFIED BY 'YOUR_PASSWORD*';
+GRANT ALL ON `YOUR_DATABASE_NAME`.* TO 'YOUR_USERNAME'@'%';
