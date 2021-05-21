@@ -42,5 +42,7 @@ The subdonmain name for openenevtory can be configured in the .env via DOMAIN_OE
 	* take a look into your .env file
 * Why is the naming of the containers done by hand?
 	* As this stack is not ment to be massively deployed I found it more convenient to name the containers myself. It further helps me to know what to enter manually in the php-configuration files of open enventory. A automatic naming would be useful if the php-configuration files would be automatically changed, but I did not investigate in that.
+* When I deploy a new stack and restore all databases, the users still do not have access to OpenEnventory.
+	* This is due to the decicion of OpenEnventory to save users in the mysql-database. A solution is to login in OpenEnventory with root, goto Settings -> Rewrite Users do database
 
 
